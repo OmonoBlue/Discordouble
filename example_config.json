@@ -1,0 +1,35 @@
+{
+  "bot": {
+    "discord_token": "DISCORD_BOT_TOKEN_HERE",
+    "discord_app_id": "DISCORD_BOT_APPLICATION_ID_HERE",
+    "pretending_to_be": "YOUR_DISCORD_USERNAME#1234",
+    "context_history_limit": 7,
+    "can_send_YT_links": true
+  },
+  "parsing": {
+    "out_file_name": "TrainingDataset.txt",
+    "include_attachments": false,
+    "replace_youtube_links": true,
+    "line_limit": -1
+  },
+  "training": {
+    "uses_gpu": true,
+    "GPT2_model_type": "124M",
+    "dataset_file_name": "TrainingDataset.txt",
+    "out_folder_name": "trained_model",
+    "num_steps": 8000,
+    "generate_every": 1000,
+    "save_every": 1000,
+    "learning_rate": 0.001,
+    "batch_size": 1
+  },
+  "gen": {
+    "uses_gpu": true,
+    "model_folder_name": "trained_model",
+    "temperature": 0.9,
+    "top_k": 0,
+    "top_p": 0,
+    "repetition_penalty": 0,
+    "length_penalty": 0
+  }
+}
