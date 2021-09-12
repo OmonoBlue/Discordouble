@@ -1,5 +1,6 @@
 # Discordouble
-GPT-2 AI Discord Doppleganger bot. Uses [AiTextGen](https://github.com/minimaxir/aitextgen) to train a GPT-2 Model on your Discord server's message history, then uses that training data to join discord conversations and become the ultimate doppelganger.
+GPT-2 AI Discord Doppleganger bot. Uses message history to learn everyone's speech patters, then trains an AI chatbot to send messages in your server pretending to be whatever server member you want! 
+Uses [AiTextGen](https://github.com/minimaxir/aitextgen)
 Inspired by [yourAI](https://github.com/M4cs/yourAI)
 
 ## Requirements
