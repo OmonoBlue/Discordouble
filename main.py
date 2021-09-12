@@ -65,11 +65,11 @@ def parse_csv(config):
         print("File must be a CSV file!")
     else:
         try:
-            data_parser.parse_csv(filename = file_path, 
-                outName = parseConfig["out_file_name"], 
-                lineLimit = parseConfig["line_limit"], 
-                replaceYT = parseConfig["replace_youtube_links"],
-                includeAttachments = parseConfig["include_attachments"])
+            data_parser.parse_csv(file_name = file_path, 
+                out_name = parseConfig["out_file_name"], 
+                line_limit = parseConfig["line_limit"], 
+                replace_YT = parseConfig["replace_youtube_links"],
+                include_attachments = parseConfig["include_attachments"])
         except Exception as e:
             print("Error parsing CSV: ")
             print(e)

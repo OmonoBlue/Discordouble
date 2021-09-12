@@ -71,8 +71,8 @@ async def replace_youtube_search(text):
 
 def parse_csv(file_name = "C-Eng - Central - general [671308707975397376].csv", out_name = "parsedMessages.txt", line_limit = -1, replace_YT = True, include_attachments = False):
     
-    dataset = open(filename, "r", encoding='utf-8')
-    output = open(outName, "w", encoding='utf-8')
+    dataset = open(file_name, "r", encoding='utf-8')
+    output = open(out_name, "w", encoding='utf-8')
     
     reader = csv.reader((x.replace('\0', '') for x in dataset), delimiter=",")
     line_count = 0
@@ -83,7 +83,7 @@ def parse_csv(file_name = "C-Eng - Central - general [671308707975397376].csv", 
         if line_count == 0:
             line_count = 1
             continue
-        elif line_count == lineLimit:
+        elif line_count == line_limit:
             break
         
         line_count += 1
@@ -92,18 +92,18 @@ def parse_csv(file_name = "C-Eng - Central - general [671308707975397376].csv", 
         text = row[3]
         attachment = row[4]
             
-        if replaceYT:
+        if replace_YT:
             text = asyncio.get_event_loop().run_until_complete(replace_youtube_links(text))
         
-        if text == "" and not includeAttachments:
+        if text == "" and not include_attachments:
             continue
             
         if last_author == "":
-            output.write(author + ":\n" + text + (attachment if includeAttachments else "") + "\n")
+            output.write(author + ":\n" + text + (attachment if include_attachments else "") + "\n")
         elif author == last_author:
-            output.write(text + (attachment if includeAttachments else "") + "\n")
+            output.write(text + (attachment if include_attachments else "") + "\n")
         else:
-            output.write("\n" + author + ":\n" + text + (attachment if includeAttachments else "") + "\n")
+            output.write("\n" + author + ":\n" + text + (attachment if include_attachments else "") + "\n")
 
         last_author = author  
         
@@ -111,7 +111,7 @@ def parse_csv(file_name = "C-Eng - Central - general [671308707975397376].csv", 
     output.close()
     print("CSV Parsed Successfully. Total messages:", line_count)
     
-    print("Dataset saved to", outName)
+    print("Dataset saved to", out_name)
 
 def load_set_from_file(filename):
     try:
