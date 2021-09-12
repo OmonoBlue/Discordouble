@@ -32,9 +32,13 @@ Now that you have your bot's token and application id, open the config.json file
 
 The start of your config.json should look something like this:
 `  "bot": {`
-	`    "discord_token": "ODU1FSER8jAwMDA5MzAzrdr9.YMzvBA.bov8Hw9KAe0GqBi97SAF23DdminJ",`
+
+`    "discord_token": "ODU1FSER8jAwMDA5MzAzrdr9.YMzvBA.bov8Hw9KAe0GqBi97SAF23DdminJ",`
+
 `    "discord_app_id": "842324200109452192",`
+
 `    "pretending_to_be": "BillyBobson#1337",`
+
 `    ...`
 
 Save the file, then move on to the next section.
