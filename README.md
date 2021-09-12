@@ -1,7 +1,7 @@
 # Discordouble
 GPT-2 AI Discord Doppleganger bot. Uses message history to learn everyone's speech patters, then trains an AI chatbot to send messages in your server pretending to be whatever server member you want! 
-Uses [AiTextGen](https://github.com/minimaxir/aitextgen)
-Inspired by [yourAI](https://github.com/M4cs/yourAI)
+
+Uses [AiTextGen](https://github.com/minimaxir/aitextgen), and inspired by [yourAI](https://github.com/M4cs/yourAI)
 
 ## Requirements
 Please make sure you download and install [Python](https://www.python.org/downloads/) on your computer. I recommend Python 3.7, but later version should work as well. 
