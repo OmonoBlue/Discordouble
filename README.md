@@ -31,6 +31,7 @@ Now that you have your bot's token and application id, open the config.json file
 3. Next, replace `"pretending_to_be": "YOUR_DISCORD_USERNAME#1234",` with the discord username that the bot will imitate! (use full username, and include the # tag number as well!)
 
 The start of your config.json should look something like this:
+
 `  "bot": {`
 
 `    "discord_token": "ODU1FSER8jAwMDA5MzAzrdr9.YMzvBA.bov8Hw9KAe0GqBi97SAF23DdminJ",`
