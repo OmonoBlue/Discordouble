@@ -23,11 +23,6 @@ def run_bot(config):
     GEN_TEMP = 0.9
     GEN_TOP_P = 0.9
     EMOTE_CODES = {}
-    try:
-        with open("emotes.json") as file:
-            EMOTE_CODES = json.load(file)
-    except:
-        print("Error opening emote file")
         
 
     ai = aitextgen(model_folder=genConfig["model_folder_name"], to_gpu=genConfig["uses_gpu"])
@@ -117,21 +112,15 @@ def run_bot(config):
                 if not (e in emoteSet):
                     emoteSet.add(e)
             for e in emoteSet:
-                #Check emote code dictionary first
-                if e in EMOTE_CODES:
-                    print("replacing", e, "with", EMOTE_CODES[e])
-                    text = text.replace(":" + e + ":", EMOTE_CODES[e])
-                else:
-                    print("Can't find emote in dataset:", e)
                 #Search through all servers the bot is in
-                    emoji_match = lambda v: v.name == e
+                emoji_match = lambda v: v.name == e
+                
+                emoji = next(filter(emoji_match, client.emojis), None)
+                if emoji:
+                    ID = emoji.id
                     
-                    emoji = next(filter(emoji_match, client.emojis), None)
-                    if emoji:
-                        ID = emoji.id
-                        
-                        text = text.replace(":" + e + ":", ("<a:" if emoji.animated else "<:") + e + ":" + str(ID) + ">")
-        
+                    text = text.replace(":" + e + ":", ("<a:" if emoji.animated else "<:") + e + ":" + str(ID) + ">")
+    
         return text
         
     client.run(botConfig["discord_token"])
