@@ -1,6 +1,7 @@
 # Discordouble
-GPT-2 AI Discord Doppleganger bot. Uses [AiTextGen](https://github.com/minimaxir/aitextgen) to train a GPT-2 Model on your Discord server's message history, then uses that training data to join discord conversations and become the ultimate doppelganger.
-Inspired by [yourAI](https://github.com/M4cs/yourAI)
+GPT-2 AI Discord Doppleganger bot. Uses message history to learn everyone's speech patters, then trains an AI chatbot to send messages in your server pretending to be whatever server member you want! 
+
+Uses [AiTextGen](https://github.com/minimaxir/aitextgen), and inspired by [yourAI](https://github.com/M4cs/yourAI)
 
 ## Requirements
 Please make sure you download and install [Python](https://www.python.org/downloads/) on your computer. I recommend Python 3.7, but later version should work as well. 
@@ -31,10 +32,15 @@ Now that you have your bot's token and application id, open the config.json file
 3. Next, replace `"pretending_to_be": "YOUR_DISCORD_USERNAME#1234",` with the discord username that the bot will imitate! (use full username, and include the # tag number as well!)
 
 The start of your config.json should look something like this:
+
 `  "bot": {`
-	`    "discord_token": "ODU1FSER8jAwMDA5MzAzrdr9.YMzvBA.bov8Hw9KAe0GqBi97SAF23DdminJ",`
+
+`    "discord_token": "ODU1FSER8jAwMDA5MzAzrdr9.YMzvBA.bov8Hw9KAe0GqBi97SAF23DdminJ",`
+
 `    "discord_app_id": "842324200109452192",`
+
 `    "pretending_to_be": "BillyBobson#1337",`
+
 `    ...`
 
 Save the file, then move on to the next section.
