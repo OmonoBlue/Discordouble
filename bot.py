@@ -5,12 +5,17 @@ import time
 import re 
 import data_parser as parser
 import json
+import os
 
 
 def run_bot(config):
     
     genConfig = config["gen"]
     botConfig = config["bot"]
+    
+    if not (os.path.exists(os.path.join(os.getcwd(), genConfig["model_folder_name"]))):
+        print("AI model folder \"%s\" does not exist! Did you forget to train?" % os.path.join(os.getcwd(), genConfig["model_folder_name"]))
+        return
     
     INVITE_LINK = "https://discord.com/oauth2/authorize?client_id=%s&scope=bot+applications.commands" % botConfig["discord_app_id"]
     YOURNAME = botConfig["pretending_to_be"]
@@ -23,15 +28,20 @@ def run_bot(config):
     GEN_TEMP = 0.9
     GEN_TOP_P = 0.9
     EMOTE_CODES = {}
-        
-
-    ai = aitextgen(model_folder=genConfig["model_folder_name"], to_gpu=genConfig["uses_gpu"])
+    
+    try:
+        ai = aitextgen(model_folder=genConfig["model_folder_name"], to_gpu=genConfig["uses_gpu"])
+    except Exception as e:
+        print("An error has occured while loading the model into aitextgen!")
+        print(e)
+        return
 
     client = discord.Client()
 
     @client.event
     async def on_ready():
         print('We have logged in as {0.user}'.format(client))
+        print("Invite link: $s", INVITE_LINK)
         activity = discord.Activity(name="as %s" % YOURNAME_NOID, type=discord.ActivityType.playing)
         await client.change_presence(status=discord.Status.online, activity=activity)
 

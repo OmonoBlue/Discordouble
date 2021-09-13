@@ -38,14 +38,14 @@ def main():
             print("You chose %s!" % choice)
             
             if choice == "R":
-                print("Running bot...")
+                print("Running bot...\n")
                 bot.run_bot(config)
                 break
             elif choice == "P":
-                print("Parsing Dataset...")
+                print("Parsing Dataset...\n")
                 parse_csv(config)
             elif choice == "T":
-                print("Training bot...")
+                print("Training bot...\n")
                 bot.train_bot(config)
             elif choice == "Q":
                 break
