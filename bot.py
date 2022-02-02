@@ -28,6 +28,11 @@ def run_bot(config):
     GEN_TEMP = 0.9
     GEN_TOP_P = 0.9
     EMOTE_CODES = {}
+    try:
+        with open("emotes.json") as file:
+            EMOTE_CODES = json.load(file)
+    except:
+        print("Error opening emote file")
     
     try:
         ai = aitextgen(model_folder=genConfig["model_folder_name"], to_gpu=genConfig["uses_gpu"])
@@ -110,7 +115,57 @@ def run_bot(config):
                             async with message.channel.typing():
                                 await message.channel.send(msg)   
                     
-
+                    
+    async def generate_reply(message):
+        msgHist = ""
+        last_author = ""
+        
+        old = await message.channel.history(limit=HISTORY_LIMIT).flatten()
+        old.reverse()
+        
+        for msg in old:
+            if len(msg.mentions) > 0:
+                for mention in msg.mentions:
+                    msg.content.replace("<@!" + str(mention.id) + ">", "@" + mention.name)
+                
+            if last_author == msg.author.name:
+                msgHist = msgHist + msg.content.replace(BOT_MENTION_ID, "@" + YOURNAME_NOID) + "\n"
+            else:
+                msgHist = msgHist + ("\n" if len(msgHist) > 0 else "") \
+                        + msg.author.name + "#" + msg.author.discriminator + ":\n" \
+                        + msg.content.replace(BOT_MENTION_ID, "@" + YOURNAME_NOID) + "\n"
+                        
+            last_author = msg.author.name
+        
+        msgHist = await parser.replace_youtube_links(msgHist)
+            
+        prompt = msgHist + "\n" + YOURNAME + ":\n"
+        
+        # Generate response 
+        tic = time.perf_counter()
+        results = ai.generate_one(
+            prompt=prompt, 
+            max_length=450, 
+            temperature=genConfig["temperature"],
+            top_k=genConfig["top_k"]
+            )
+        
+        toc = time.perf_counter()
+        print("Generated response in %0.4f seconds" % (toc-tic))
+        
+        final = results[len(prompt):].splitlines()
+        
+        ok = []
+        for msg in final:
+            if msg == "":
+                break
+            if botConfig["can_send_YT_links"]:
+                msg = await parser.replace_youtube_search(msg)
+            msg = replace_emotes(msg)
+            ok.append(msg)
+        return ok
+    
+    
     def replace_emotes(text):
         emoteRegex = r':(\w*?):'
         
@@ -122,14 +177,20 @@ def run_bot(config):
                 if not (e in emoteSet):
                     emoteSet.add(e)
             for e in emoteSet:
-                #Search through all servers the bot is in
-                emoji_match = lambda v: v.name == e
-                
-                emoji = next(filter(emoji_match, client.emojis), None)
-                if emoji:
-                    ID = emoji.id
+                #Check emote code dictionary first
+                if e in EMOTE_CODES:
+                    print("replacing", e, "with", EMOTE_CODES[e])
+                    text = text.replace(":" + e + ":", EMOTE_CODES[e])
+                else:
+                    print("Can't find emote in dataset:", e)
+                    #Search through all servers the bot is in
+                    emoji_match = lambda v: v.name == e
                     
-                    text = text.replace(":" + e + ":", ("<a:" if emoji.animated else "<:") + e + ":" + str(ID) + ">")
+                    emoji = next(filter(emoji_match, client.emojis), None)
+                    if emoji:
+                        ID = emoji.id
+                        
+                        text = text.replace(":" + e + ":", ("<a:" if emoji.animated else "<:") + e + ":" + str(ID) + ">")
     
         return text
         
