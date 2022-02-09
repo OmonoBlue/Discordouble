@@ -46,7 +46,7 @@ def run_bot(config):
     @client.event
     async def on_ready():
         print('We have logged in as {0.user}'.format(client))
-        print("Invite link: $s", INVITE_LINK)
+        print(f'Invite link: {INVITE_LINK}')
         activity = discord.Activity(name="as %s" % YOURNAME_NOID, type=discord.ActivityType.playing)
         await client.change_presence(status=discord.Status.online, activity=activity)
 
@@ -58,58 +58,13 @@ def run_bot(config):
             else:
                 if client.is_ready:
                     print("\n%s: " % time.ctime(time.time()))
-                    msgHist = ""
-                    last_author = ""
-                    
-                    old = await message.channel.history(limit=HISTORY_LIMIT).flatten()
-                    old.reverse()
-                    
-                    for msg in old:
-                        if len(msg.mentions) > 0:
-                            for mention in msg.mentions:
-                                msg.content.replace("<@!" + str(mention.id) + ">", "@" + mention.name)
-                            
-                        if last_author == msg.author.name:
-                            msgHist = msgHist + msg.content.replace(BOT_MENTION_ID, "@" + YOURNAME_NOID) + "\n"
-                        else:
-                            msgHist = msgHist + ("\n" if len(msgHist) > 0 else "") \
-                                    + msg.author.name + "#" + msg.author.discriminator + ":\n" \
-                                    + msg.content.replace(BOT_MENTION_ID, "@" + YOURNAME_NOID) + "\n"
-                                    
-                        last_author = msg.author.name
-                    
-                    msgHist = await parser.replace_youtube_links(msgHist)
-                        
-                    prompt = msgHist + "\n" + YOURNAME + ":\n"
-                    
-                    # Generate response 
-                    tic = time.perf_counter()
-                    results = ai.generate_one(
-                        prompt=prompt, 
-                        max_length=450, 
-                        temperature=genConfig["temperature"],
-                        top_k=genConfig["top_k"]
-                        )
-                    
-                    toc = time.perf_counter()
-                    print("Generated response in %0.4f seconds" % (toc-tic))
-                    
-                    final = results[len(prompt):].splitlines()
-                    
-                    ok = []
-                    for msg in final:
-                        if msg == "":
-                            break
-                        if botConfig["can_send_YT_links"]:
-                            msg = await parser.replace_youtube_search(msg)
-                        msg = replace_emotes(msg)
-                        ok.append(msg)
+                    message_replies = await generate_reply(message)
                     
                     # print("RESULTS:[\n", results, "]\n")
                     # print("FINAL:[\n", final, "]\n")
                     
-                    for i, msg in enumerate(ok):
-                        if i == (len(ok) -1):
+                    for i, msg in enumerate(message_replies):
+                        if i == (len(message_replies) -1):
                             await message.channel.send(msg)
                         else:
                             async with message.channel.typing():
