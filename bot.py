@@ -1,11 +1,25 @@
+from typing import Dict
 from aitextgen import aitextgen
 import discord
+from discord.ext import tasks, commands
 import asyncio, random, string
 import time
 import re 
 import data_parser as parser
 import json
 import os
+
+
+# When previously sent message was sent
+BOT_PREV_MESSAGE_TIME : float = 0
+# If someone sends a message between auto_reply_min_wait and auto_reply_interval seconds after the bot's message, auto reply to the user's message
+auto_reply_inverval : float = 40
+auto_reply_min_wait : float = 10
+auto_reply_chance : float = 0.3
+# If someone sends a message, and it's been at least (auto_message_wait) seconds since the bot's last message, then the bot has (auto_message_chance) chance of replying to that message
+auto_message_wait : float = 60* 10
+# chance of auto replying to message
+auto_message_chance : float = 0.2
 
 
 def run_bot(config):
@@ -28,6 +42,7 @@ def run_bot(config):
     GEN_TEMP = 0.9
     GEN_TOP_P = 0.9
     EMOTE_CODES = {}
+
     try:
         with open("emotes.json") as file:
             EMOTE_CODES = json.load(file)
@@ -52,25 +67,47 @@ def run_bot(config):
 
     @client.event
     async def on_message(message):
-        if client.user.mention in message.content.replace('<@!', '<@'):
+        global BOT_PREV_MESSAGE_TIME
+        if client.is_ready:
+            # Don't let bot reply to itself
             if message.author == client.user:
                 return
+            
+            if client.user.mention in message.content.replace('<@!', '<@') or YOURNAME_NOID in message.content:
+                # IF BOT IS MENTIONED, REPLY TO THE MESSAGE
+                print("\n%s: " % time.ctime(time.time()))
+                await send_reply_to_message(message)
             else:
-                if client.is_ready:
-                    print("\n%s: " % time.ctime(time.time()))
-                    message_replies = await generate_reply(message)
-                    
-                    # print("RESULTS:[\n", results, "]\n")
-                    # print("FINAL:[\n", final, "]\n")
-                    
-                    for i, msg in enumerate(message_replies):
-                        if i == (len(message_replies) -1):
-                            await message.channel.send(msg)
-                        else:
-                            async with message.channel.typing():
-                                await message.channel.send(msg)   
-                    
-                    
+                curr_time = time.time()
+                time_since_last_bot_msg = curr_time - BOT_PREV_MESSAGE_TIME
+                if time_since_last_bot_msg > auto_reply_min_wait:
+                    if time_since_last_bot_msg <= auto_reply_inverval:
+                        # CHANCE TO AUTO REPLY
+                        if random.uniform(0, 1) <= auto_reply_chance:
+                            print("\nAuto Replying at %s: " % time.ctime(time.time()))
+                            await send_reply_to_message(message)
+
+                    elif time_since_last_bot_msg > auto_message_wait:
+                        # CHANCE TO AUTO MESSAGE
+                        if random.uniform(0, 1) <= auto_message_chance:
+                            print("\nAuto Messaging at %s: " % time.ctime(time.time()))
+                            await send_reply_to_message(message)
+    
+
+    async def send_reply_to_message(message):
+        """Generate response to message, and send the reply"""
+        message_replies = await generate_reply(message)
+
+        for i, msg in enumerate(message_replies):
+            if i == (len(message_replies) -1):
+                await message.channel.send(msg)
+            else:
+                async with message.channel.typing():
+                    await message.channel.send(msg)
+        global BOT_PREV_MESSAGE_TIME
+        BOT_PREV_MESSAGE_TIME = time.time()
+
+
     async def generate_reply(message):
         msgHist = ""
         last_author = ""
